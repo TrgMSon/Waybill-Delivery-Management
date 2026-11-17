@@ -1,8 +1,4 @@
 -- ========== Người dùng & phân quyền ==========
-CREATE TABLE roles (
-    id   BIGSERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL UNIQUE
-);
 
 CREATE TABLE users (
     id            BIGSERIAL PRIMARY KEY,
@@ -11,16 +7,25 @@ CREATE TABLE users (
     full_name     VARCHAR(150) NOT NULL,
     phone         VARCHAR(20),
     status        VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+    role          VARCHAR(20)  NOT NULL DEFAULT 'DRIVER',
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
     CONSTRAINT chk_users_status CHECK (status IN ('ACTIVE', 'LOCKED'))
 );
 
-CREATE TABLE user_roles (
-    user_id BIGINT NOT NULL REFERENCES users (id),
-    role_id BIGINT NOT NULL REFERENCES roles (id),
-    PRIMARY KEY (user_id, role_id)
+CREATE TABLE refresh_tokens (
+    id         BIGSERIAL PRIMARY KEY,
+    token      VARCHAR(255) NOT NULL UNIQUE,            -- entity: tokenHash
+    user_id    BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ  NOT NULL,
+    revoked    BOOLEAN      NOT NULL DEFAULT FALSE,
+    revoked_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    CONSTRAINT chk_refresh_tokens_revoked CHECK (revoked = TRUE OR revoked_at IS NULL)
 );
+
+CREATE INDEX idx_refresh_tokens_user ON refresh_tokens (user_id);
+CREATE INDEX idx_refresh_tokens_expires_at ON refresh_tokens (expires_at);
 
 -- ========== Tài xế ==========
 CREATE TABLE drivers (

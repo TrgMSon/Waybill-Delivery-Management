@@ -25,3 +25,7 @@ management:
     web:
       exposure:
         include: health,info
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:1800000}
