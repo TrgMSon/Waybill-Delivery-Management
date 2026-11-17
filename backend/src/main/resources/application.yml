@@ -27,5 +27,7 @@ management:
         include: health,info
 
 jwt:
-  secret-key: ${JWT_SECRET_KEY}
+  secret-key: ${JWT_SECRET_KEY:dev-only-secret-do-not-use-in-production-0123456789}
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:1800000}
+  refresh-token:
+    expiration-days: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:7}
