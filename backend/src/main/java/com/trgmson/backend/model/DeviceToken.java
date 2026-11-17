@@ -1,6 +1,6 @@
 package com.trgmson.backend.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -41,5 +41,5 @@ public class DeviceToken {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 }

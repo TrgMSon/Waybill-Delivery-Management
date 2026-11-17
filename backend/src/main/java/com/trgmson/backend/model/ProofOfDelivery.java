@@ -1,6 +1,6 @@
 package com.trgmson.backend.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -49,5 +49,5 @@ public class ProofOfDelivery {
 
     @CreationTimestamp
     @Column(name = "delivered_at", nullable = false, updatable = false)
-    private OffsetDateTime deliveredAt;
+    private Instant deliveredAt;
 }

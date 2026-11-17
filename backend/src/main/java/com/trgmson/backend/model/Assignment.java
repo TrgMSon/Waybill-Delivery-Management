@@ -1,6 +1,6 @@
 package com.trgmson.backend.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -51,10 +51,10 @@ public class Assignment {
 
     @CreationTimestamp
     @Column(name = "offered_at", nullable = false, updatable = false)
-    private OffsetDateTime offeredAt;
+    private Instant offeredAt;
 
     @Column(name = "responded_at")
-    private OffsetDateTime respondedAt;
+    private Instant respondedAt;
 
     @Column(length = 500)
     private String reason;

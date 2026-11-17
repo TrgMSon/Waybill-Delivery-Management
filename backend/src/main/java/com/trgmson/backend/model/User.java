@@ -1,13 +1,16 @@
 package com.trgmson.backend.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.trgmson.backend.model.enums.Role;
+import com.trgmson.backend.model.enums.RoleConverter;
 import com.trgmson.backend.model.enums.UserStatus;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -50,9 +53,12 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
+
+    @Convert(converter = RoleConverter.class)
+    private Role role;
 }
