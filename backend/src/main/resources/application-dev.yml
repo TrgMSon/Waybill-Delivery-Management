@@ -1,6 +1,0 @@
-spring:
-  flyway:
-    locations: classpath:db/migration, classpath:db/seed
-
-jwt:
-  secret-key: ${JWT_SECRET_KEY:dev-only-secret-do-not-use-in-production-0123456789}
