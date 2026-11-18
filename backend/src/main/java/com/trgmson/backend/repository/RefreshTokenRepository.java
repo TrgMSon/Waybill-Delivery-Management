@@ -23,7 +23,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
         WHERE (r.expiresAt < :expiredBefore)
            OR (r.revoked = true AND r.revokedAt < :revokedBefore)
         """)
-    void deleteStaleTokens(
+    int deleteStaleTokens(
             @Param("expiredBefore") Instant expiredBefore,
             @Param("revokedBefore") Instant revokedBefore
     );
