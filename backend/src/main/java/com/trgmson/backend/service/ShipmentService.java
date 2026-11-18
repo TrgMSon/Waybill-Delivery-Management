@@ -14,8 +14,8 @@ public interface ShipmentService {
     ShipmentResponse createShipment(CreateShipmentRequest req, User creator);
 
     // 2. Đọc vận đơn
-    ShipmentResponse getById(Long id);
-    Page<ShipmentResponse> getShipments(ShipmentStatus status, Pageable pageable);
+    ShipmentResponse getById(Long id, User currentUser);
+    Page<ShipmentResponse> getShipments(ShipmentStatus status, Pageable pageable, User currentUser);
 
     // 3. Sửa thông tin khi còn CREATED
     ShipmentResponse updateShipment(Long id, UpdateShipmentRequest req);
