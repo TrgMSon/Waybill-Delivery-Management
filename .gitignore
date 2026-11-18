@@ -27,3 +27,38 @@ replay_pid*
 .idea/
 
 .env
+
+# =========================
+# React / Node.js Git Ignore
+# =========================
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production Build
+/build
+/dist
+
+# Misc
+.DS_Store
+.npm
+.eslintcache
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.suo
+.ntvs*
+.njsproj
+.sln
+.swp
