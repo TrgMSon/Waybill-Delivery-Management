@@ -19,9 +19,11 @@ import com.trgmson.backend.exception.NotFoundException;
 import com.trgmson.backend.model.Shipment;
 import com.trgmson.backend.model.ShipmentStatusHistory;
 import com.trgmson.backend.model.User;
+import com.trgmson.backend.model.enums.Role;
 import com.trgmson.backend.model.enums.ShipmentStatus;
 import com.trgmson.backend.repository.ShipmentRepository;
 import com.trgmson.backend.repository.ShipmentStatusHistoryRepository;
+import com.trgmson.backend.repository.AssignmentRepository;
 import com.trgmson.backend.service.ShipmentService;
 
 @Service
@@ -33,11 +35,14 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final ShipmentStatusHistoryRepository historyRepository;
+    private final AssignmentRepository assignmentRepository;
 
     public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
-                               ShipmentStatusHistoryRepository historyRepository) {
+                               ShipmentStatusHistoryRepository historyRepository,
+                               AssignmentRepository assignmentRepository) {
         this.shipmentRepository = shipmentRepository;
         this.historyRepository = historyRepository;
+        this.assignmentRepository = assignmentRepository;
     }
 
     // =========================================================================
@@ -75,18 +80,33 @@ public class ShipmentServiceImpl implements ShipmentService {
     // =========================================================================
     @Override
     @Transactional(readOnly = true)
-    public ShipmentResponse getById(Long id) {
+    public ShipmentResponse getById(Long id, User currentUser) {
+        if (!assignmentRepository.existsByShipmentIdAndUserId(id, currentUser.getId()) && !currentUser.getRole().equals(Role.ADMIN)) {
+            throw new ConflictException("Người dùng không có quyền truy cập vận đơn này");
+        }
+
         Shipment shipment = findShipmentOrThrow(id);
         return mapToResponse(shipment);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ShipmentResponse> getShipments(ShipmentStatus status, Pageable pageable) {
-        Page<Shipment> page = (status != null)
-                ? shipmentRepository.findByStatus(status, pageable)
-                : shipmentRepository.findAll(pageable);
-        return page.map(this::mapToResponse);
+    public Page<ShipmentResponse> getShipments(ShipmentStatus status, Pageable pageable, User currentUser) {
+        if (currentUser.getRole().equals(Role.ADMIN)) {
+            Page<Shipment> page = (status == null)
+                    ? shipmentRepository.findAll(pageable)
+                    : shipmentRepository.findByStatus(status, pageable);
+            return page.map(this::mapToResponse);
+        }
+        // Nếu là DRIVER, chỉ lấy các vận đơn được phân công cho họ
+        if (currentUser.getRole().equals(Role.DRIVER)) {
+            Page<Shipment> page = (status == null)
+                    ? shipmentRepository.findByAssignedDriverId(currentUser.getId(), pageable)
+                    : shipmentRepository.findByAssignedDriverIdAndStatus(currentUser.getId(), status, pageable);
+            return page.map(this::mapToResponse);
+        }
+
+        throw new ConflictException("Người dùng không có quyền truy cập danh sách vận đơn này");
     }
 
     // =========================================================================
