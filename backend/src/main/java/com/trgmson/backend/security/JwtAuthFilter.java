@@ -10,6 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.trgmson.backend.model.enums.UserStatus;
+import com.trgmson.backend.repository.UserRepository;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +21,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -41,16 +46,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // set SecurityContext sau khi valid ok
         if (isValid) {
             Long userId = jwtService.extractUserId(token);
-            String email = jwtService.extractEmail(token);
-            String role = jwtService.extractRole(token);
-
-            List<GrantedAuthority> authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
-
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email, null,
-                    authorities);
-            authentication.setDetails(userId);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (userId != null) {
+                userRepository.findById(userId)
+                        .filter(user -> user.getStatus() == UserStatus.ACTIVE)
+                        .ifPresent(user -> {
+                            List<GrantedAuthority> authorities = List.of(
+                                    new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+                            UsernamePasswordAuthenticationToken authentication =
+                                    new UsernamePasswordAuthenticationToken(user, null, authorities);
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        });
+            }
         }
 
         filterChain.doFilter(request, response);

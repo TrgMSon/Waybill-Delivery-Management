@@ -1,16 +1,21 @@
-# React + Vite
+# Waybill frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Ứng dụng React/Vite cho đăng nhập và quản lý vận đơn.
 
-Currently, two official plugins are available:
+## Chạy
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Từ thư mục `frontend`:
 
-## React Compiler
+```powershell
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Mặc định Vite proxy các request `/api` tới `http://localhost:8080`. Để gọi API ở origin khác, thiết lập `VITE_API_BASE_URL`.
 
-## Expanding the Oxlint configuration
+```powershell
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Access token chỉ tồn tại trong bộ nhớ runtime. Refresh token được backend quản lý trong cookie `HttpOnly`; không lưu token vào `localStorage` hoặc `sessionStorage`.
