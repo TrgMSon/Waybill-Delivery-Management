@@ -1,4 +1,4 @@
-import Icon from '../ui/Icon'
+import Icon from '../ui/Icon';
 
 export default function MetricCard({ label, value, note, icon, accent = '' }) {
   return (

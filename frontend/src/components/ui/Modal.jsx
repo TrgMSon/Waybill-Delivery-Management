@@ -1,14 +1,14 @@
-import { useEffect } from 'react'
-import Icon from './Icon'
+import { useEffect } from 'react';
+import Icon from './Icon';
 
 export default function Modal({ title, subtitle, onClose, children, wide = false }) {
   useEffect(() => {
     function handleKeyDown(event) {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') onClose();
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [onClose])
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   return (
     <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>

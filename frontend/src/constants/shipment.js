@@ -8,7 +8,7 @@ export const STATUS_LABELS = {
   RETURNING: 'Đang hoàn hàng',
   RETURNED: 'Đã hoàn hàng',
   CANCELLED: 'Đã hủy',
-}
+};
 
 export const STATUS_OPTIONS = [
   ['', 'Tất cả trạng thái'],
@@ -21,7 +21,7 @@ export const STATUS_OPTIONS = [
   ['RETURNING', 'Đang hoàn hàng'],
   ['RETURNED', 'Đã hoàn hàng'],
   ['CANCELLED', 'Đã hủy'],
-]
+];
 
 export const STATUS_TRANSITIONS = {
   CREATED: ['ASSIGNED', 'CANCELLED'],
@@ -29,4 +29,4 @@ export const STATUS_TRANSITIONS = {
   PICKED_UP: ['IN_TRANSIT', 'DELIVERED', 'DELIVERY_FAILED'],
   IN_TRANSIT: ['DELIVERED', 'DELIVERY_FAILED'],
   DELIVERY_FAILED: ['IN_TRANSIT', 'CANCELLED'],
-}
+};

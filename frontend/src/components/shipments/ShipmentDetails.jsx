@@ -1,29 +1,29 @@
-import { useState } from 'react'
-import { transitionShipment } from '../../api'
-import { STATUS_LABELS, STATUS_TRANSITIONS } from '../../constants/shipment'
-import { formatDate, formatMoney } from '../../utils/formatters'
-import Icon from '../ui/Icon'
-import Modal from '../ui/Modal'
+import { useState } from 'react';
+import { transitionShipment } from '../../api';
+import { STATUS_LABELS, STATUS_TRANSITIONS } from '../../constants/shipment';
+import { formatDate, formatMoney } from '../../utils/formatters';
+import Icon from '../ui/Icon';
+import Modal from '../ui/Modal';
 
 export default function ShipmentDetails({ shipment, role, onClose, onUpdated }) {
-  const [nextStatus, setNextStatus] = useState('')
-  const [note, setNote] = useState('')
-  const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
-  const options = STATUS_TRANSITIONS[shipment.status] || []
+  const [nextStatus, setNextStatus] = useState('');
+  const [note, setNote] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const options = STATUS_TRANSITIONS[shipment.status] || [];
 
   async function handleStatusChange(event) {
-    event.preventDefault()
-    if (!nextStatus) return
-    setError('')
-    setSaving(true)
+    event.preventDefault();
+    if (!nextStatus) return;
+    setError('');
+    setSaving(true);
     try {
-      const updated = await transitionShipment(shipment.id, nextStatus, note)
-      onUpdated(updated)
+      const updated = await transitionShipment(shipment.id, nextStatus, note);
+      onUpdated(updated);
     } catch (updateError) {
-      setError(updateError.message)
+      setError(updateError.message);
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 

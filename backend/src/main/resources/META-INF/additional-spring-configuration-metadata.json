@@ -18,5 +18,15 @@
     "name": "jwt.refresh-token.expiration-days",
     "type": "java.lang.String",
     "description": "A description for 'jwt.refresh-token.expiration-days'"
+  },
+  {
+    "name": "auth.cookie.secure",
+    "type": "java.lang.String",
+    "description": "A description for 'auth.cookie.secure'"
+  },
+  {
+    "name": "app.cors.allowed-origin-patterns",
+    "type": "java.lang.String",
+    "description": "A description for 'app.cors.allowed-origin-patterns'"
   }
 ]}

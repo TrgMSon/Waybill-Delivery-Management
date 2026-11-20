@@ -1,80 +1,80 @@
-import { useEffect, useState } from 'react'
-import { getShipments } from '../../api'
-import { STATUS_LABELS, STATUS_OPTIONS } from '../../constants/shipment'
-import { formatDate, formatMoney } from '../../utils/formatters'
-import Icon from '../ui/Icon'
-import MetricCard from './MetricCard'
-import ShipmentDetails from '../shipments/ShipmentDetails'
-import ShipmentForm from '../shipments/ShipmentForm'
+import { useEffect, useState } from 'react';
+import { getShipments } from '../../api';
+import { STATUS_LABELS, STATUS_OPTIONS } from '../../constants/shipment';
+import { formatDate, formatMoney } from '../../utils/formatters';
+import Icon from '../ui/Icon';
+import MetricCard from './MetricCard';
+import ShipmentDetails from '../shipments/ShipmentDetails';
+import ShipmentForm from '../shipments/ShipmentForm';
 
-const CURRENT_YEAR = new Date().getFullYear()
+const CURRENT_YEAR = new Date().getFullYear();
 
 export default function Dashboard({ user, onSignOut }) {
-  const [page, setPage] = useState(0)
-  const [status, setStatus] = useState('')
-  const [search, setSearch] = useState('')
-  const [pageData, setPageData] = useState(null)
-  const [selected, setSelected] = useState(null)
-  const [showCreate, setShowCreate] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [signingOut, setSigningOut] = useState(false)
-  const [mobileMenu, setMobileMenu] = useState(false)
-  const [reloadKey, setReloadKey] = useState(0)
+  const [page, setPage] = useState(0);
+  const [status, setStatus] = useState('');
+  const [search, setSearch] = useState('');
+  const [pageData, setPageData] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [signingOut, setSigningOut] = useState(false);
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    let active = true
+    let active = true;
     getShipments({ page, status })
       .then((result) => {
         if (active) {
-          setPageData(result)
-          setError('')
+          setPageData(result);
+          setError('');
         }
       })
       .catch((loadError) => {
-        if (active) setError(loadError.message)
+        if (active) setError(loadError.message);
       })
       .finally(() => {
-        if (active) setLoading(false)
-      })
-    return () => { active = false }
-  }, [page, status, reloadKey])
+        if (active) setLoading(false);
+      });
+    return () => { active = false; }
+  }, [page, status, reloadKey]);
 
-  const shipments = pageData?.content || []
-  const query = search.trim().toLocaleLowerCase('vi')
+  const shipments = pageData?.content || [];
+  const query = search.trim().toLocaleLowerCase('vi');
   const visibleShipments = query
     ? shipments.filter((shipment) =>
         [shipment.trackingCode, shipment.receiverName, shipment.receiverPhone, shipment.deliveryAddress]
           .some((value) => value?.toLocaleLowerCase('vi').includes(query)),
       )
-    : shipments
-  const totalPages = pageData?.totalPages || 0
-  const totalItems = pageData?.totalElements || 0
-  const activeItems = shipments.filter((item) => !['DELIVERED', 'CANCELLED', 'RETURNED'].includes(item.status)).length
-  const deliveredItems = shipments.filter((item) => item.status === 'DELIVERED').length
+    : shipments;
+  const totalPages = pageData?.totalPages || 0;
+  const totalItems = pageData?.totalElements || 0;
+  const activeItems = shipments.filter((item) => !['DELIVERED', 'CANCELLED', 'RETURNED'].includes(item.status)).length;
+  const deliveredItems = shipments.filter((item) => item.status === 'DELIVERED').length;
 
   async function handleSignOut() {
-    setSigningOut(true)
+    setSigningOut(true);
     try {
-      await onSignOut()
+      await onSignOut();
     } catch (signOutError) {
-      setError(signOutError.message)
+      setError(signOutError.message);
     } finally {
-      setSigningOut(false)
+      setSigningOut(false);
     }
   }
 
   function handleCreated() {
-    setShowCreate(false)
-    setLoading(true)
-    setPage(0)
-    if (page === 0) setReloadKey((key) => key + 1)
+    setShowCreate(false);
+    setLoading(true);
+    setPage(0);
+    if (page === 0) setReloadKey((key) => key + 1);
   }
 
   function handleUpdated(updated) {
-    setSelected(updated)
-    setLoading(true)
-    setReloadKey((key) => key + 1)
+    setSelected(updated);
+    setLoading(true);
+    setReloadKey((key) => key + 1);
   }
 
   return (

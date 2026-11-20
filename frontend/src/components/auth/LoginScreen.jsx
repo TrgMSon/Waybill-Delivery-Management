@@ -1,24 +1,24 @@
-import { useState } from 'react'
-import Icon from '../ui/Icon'
+import { useState } from 'react';
+import Icon from '../ui/Icon';
 
-const CURRENT_YEAR = new Date().getFullYear()
+const CURRENT_YEAR = new Date().getFullYear();
 
 export default function LoginScreen({ onLogin }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event) {
-    event.preventDefault()
-    setError('')
-    setLoading(true)
+    event.preventDefault();
+    setError('');
+    setLoading(true);
     try {
-      await onLogin({ email, password })
+      await onLogin({ email, password });
     } catch (loginError) {
-      setError(loginError.message)
+      setError(loginError.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
