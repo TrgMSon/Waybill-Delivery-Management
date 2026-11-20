@@ -20,6 +20,14 @@ spring:
 server:
   port: ${PORT:8080}            # Render cấp biến PORT khi deploy
 
+app:
+  cors:
+    allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:5173}
+
+auth:
+  cookie:
+    secure: ${AUTH_COOKIE_SECURE:false}
+
 management:
   endpoints:
     web:

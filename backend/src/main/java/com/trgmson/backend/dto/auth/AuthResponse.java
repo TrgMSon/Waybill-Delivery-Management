@@ -2,11 +2,13 @@ package com.trgmson.backend.dto.auth;
 
 import com.trgmson.backend.dto.user.UserResponse;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 // trả về khi login thành công
 public class AuthResponse {
     private String accessToken;
