@@ -2,6 +2,45 @@
 
 Ứng dụng quản lý vận đơn và điều phối giao hàng gồm REST API Spring Boot, PostgreSQL và giao diện React.
 
+## Mô tả nghiệp vụ
+
+### Quản lý phiên làm việc và phân quyền
+
+- Người dùng đăng nhập bằng email và mật khẩu. Hệ thống xác thực bằng JWT access token; refresh token được lưu băm ở cơ sở dữ liệu và gửi cho trình duyệt bằng cookie `HttpOnly`.
+- Hệ thống có hai vai trò: `ADMIN` và `DRIVER`.
+- Quản trị viên có quyền quản lý vận đơn; tài xế chỉ truy cập các vận đơn đã được phân công cho tài khoản của mình.
+- Tài khoản đăng ký mới qua API được cấp vai trò `DRIVER`. Tài khoản bị khóa không thể đăng nhập hoặc làm mới phiên.
+- Người dùng có thể làm mới phiên đăng nhập và đăng xuất; đăng xuất sẽ thu hồi refresh token.
+
+### Quản lý vận đơn
+
+- Quản trị viên tạo vận đơn với mã vận đơn duy nhất, thông tin người gửi, địa chỉ lấy hàng, thông tin người nhận, địa chỉ giao hàng, tiền thu hộ (COD) và phí vận chuyển.
+- Mã vận đơn được sinh tự động theo mẫu có tiền tố `TMS`, ngày hiện tại và chuỗi ngẫu nhiên.
+- Danh sách vận đơn hỗ trợ phân trang, sắp xếp theo thời gian tạo giảm dần và lọc theo trạng thái.
+- Giao diện cho phép tìm kiếm trong trang hiện tại theo mã vận đơn, tên người nhận, số điện thoại người nhận hoặc địa chỉ giao hàng.
+- Quản trị viên xem được toàn bộ vận đơn; tài xế chỉ xem chi tiết và danh sách vận đơn được phân công cho tài khoản của mình.
+- REST API cho phép quản trị viên cập nhật thông tin vận đơn chỉ khi vận đơn đang ở trạng thái `CREATED`.
+- Hệ thống ghi lại lịch sử mỗi lần thay đổi trạng thái cùng người thực hiện thay đổi.
+
+### Luồng trạng thái vận đơn
+
+Hệ thống kiểm tra chuyển trạng thái bằng state machine:
+
+- `CREATED`: có thể chuyển sang `ASSIGNED` hoặc `CANCELLED`.
+- `ASSIGNED`: có thể chuyển sang `PICKED_UP`, quay lại `CREATED` hoặc `CANCELLED`.
+- `PICKED_UP`: có thể chuyển sang `IN_TRANSIT`, `DELIVERED` hoặc `DELIVERY_FAILED`.
+- `IN_TRANSIT`: có thể chuyển sang `DELIVERED` hoặc `DELIVERY_FAILED`.
+- `DELIVERY_FAILED`: có thể chuyển sang `IN_TRANSIT` hoặc `CANCELLED`.
+- `DELIVERED` và `CANCELLED` là trạng thái kết thúc.
+
+Trên giao diện, quản trị viên chỉ được chọn các trạng thái kế tiếp hợp lệ của vận đơn đang xem.
+
+### Dữ liệu demo
+
+- Môi trường demo cung cấp tài khoản quản trị và nhiều tài khoản tài xế.
+- Dữ liệu seed minh họa các vận đơn ở nhiều giai đoạn: chờ xử lý, đã phân công, đã lấy hàng, đang vận chuyển, đã giao, giao thất bại, hoàn hàng và đã hủy.
+- Dữ liệu seed cũng gồm thông tin tài xế, lượt gán vận đơn, xác nhận giao hàng và đối soát COD để hỗ trợ khởi tạo môi trường thử nghiệm.
+
 ## Chạy local
 
 1. Khởi động PostgreSQL:
