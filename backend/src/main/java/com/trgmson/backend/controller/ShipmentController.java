@@ -85,8 +85,7 @@ public class ShipmentController {
         ShipmentResponse response = shipmentService.transitionStatus(
                 id,
                 request.getNextStatus(),
-                currentUser,
-                request.getNote());
+                currentUser);
         return ResponseEntity.ok(response);
     }
 }

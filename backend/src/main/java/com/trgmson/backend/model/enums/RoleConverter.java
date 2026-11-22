@@ -1,5 +1,7 @@
 package com.trgmson.backend.model.enums;
 
+import com.trgmson.backend.exception.BadRequestException;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -18,7 +20,7 @@ public class RoleConverter implements AttributeConverter<Role, String> {
         return switch (dbData.trim().toUpperCase()) {
             case "DRIVER" -> Role.DRIVER;
             case "ADMIN" -> Role.ADMIN;
-            default -> throw new IllegalArgumentException("Vai trò tài khoản không hợp lệ: " + dbData);
+            default -> throw new BadRequestException("Vai trò tài khoản không hợp lệ: " + dbData);
         };
     }
 }

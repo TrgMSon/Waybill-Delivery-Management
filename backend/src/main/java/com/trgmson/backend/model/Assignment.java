@@ -53,6 +53,9 @@ public class Assignment {
     @Column(name = "offered_at", nullable = false, updatable = false)
     private Instant offeredAt;
 
+    @Column(name = "expires_at", nullable = false, updatable = false)
+    private Instant expiresAt;
+
     @Column(name = "responded_at")
     private Instant respondedAt;
 
