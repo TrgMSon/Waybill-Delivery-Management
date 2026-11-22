@@ -19,4 +19,6 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     Page<Shipment> findByAssignedDriverId(Long id, Pageable pageable);
 
     Page<Shipment> findByAssignedDriverIdAndStatus(Long id, ShipmentStatus status, Pageable pageable);
+
+    boolean existsById(Long id);
 }

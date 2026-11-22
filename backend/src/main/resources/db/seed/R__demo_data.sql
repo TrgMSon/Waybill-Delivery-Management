@@ -138,21 +138,22 @@ WHERE NOT EXISTS (SELECT 1 FROM shipment_status_history h WHERE h.shipment_id = 
 
 -- ========== Gán đơn ==========
 -- Mỗi vận đơn có tối đa 1 lượt ACCEPTED (khớp unique index ux_assignments_one_accepted)
-INSERT INTO assignments (shipment_id, driver_id, status, offered_at, responded_at, reason)
-SELECT s.id, d.id, v.status, now() - v.offered_ago, now() - v.responded_ago, v.reason
+-- expires_at = offered_at + ttl (ở đây ttl = 2 giờ, đủ cho mọi lượt đã phản hồi trong dữ liệu mẫu)
+INSERT INTO assignments (shipment_id, driver_id, status, offered_at, expires_at, responded_at, reason)
+SELECT s.id, d.id, v.status, now() - v.offered_ago, now() - v.offered_ago + v.ttl, now() - v.responded_ago, v.reason
 FROM (VALUES
-    ('TMS-DEMO-0003', 'driver3@demo.tms', 'REJECTED', interval '4 hours 30 minutes', interval '3 hours',               'Không đủ thời gian lấy hàng trong ngày'),
-    ('TMS-DEMO-0003', 'driver1@demo.tms', 'OFFERED',  interval '20 minutes',         NULL,                             NULL),
-    ('TMS-DEMO-0004', 'driver2@demo.tms', 'ACCEPTED', interval '5 hours',            interval '4 hours 30 minutes',    NULL),
-    ('TMS-DEMO-0005', 'driver1@demo.tms', 'ACCEPTED', interval '7 hours',            interval '6 hours 30 minutes',    NULL),
-    ('TMS-DEMO-0006', 'driver1@demo.tms', 'ACCEPTED', interval '8 hours',            interval '7 hours 30 minutes',    NULL),
-    ('TMS-DEMO-0007', 'driver1@demo.tms', 'ACCEPTED', interval '1 day 5 hours',      interval '1 day 4 hours 30 minutes', NULL),
-    ('TMS-DEMO-0008', 'driver2@demo.tms', 'ACCEPTED', interval '1 day 6 hours',      interval '1 day 5 hours 30 minutes', NULL),
-    ('TMS-DEMO-0009', 'driver3@demo.tms', 'ACCEPTED', interval '5 hours',            interval '4 hours 30 minutes',    NULL),
-    ('TMS-DEMO-0010', 'driver3@demo.tms', 'ACCEPTED', interval '6 hours',            interval '5 hours 30 minutes',    NULL),
-    ('TMS-DEMO-0011', 'driver2@demo.tms', 'ACCEPTED', interval '2 days 7 hours',     interval '2 days 6 hours',        NULL),
-    ('TMS-DEMO-0012', 'driver1@demo.tms', 'ACCEPTED', interval '3 days 23 hours',    interval '3 days 22 hours 30 minutes', NULL)
-) AS v(code, driver_email, status, offered_ago, responded_ago, reason)
+    ('TMS-DEMO-0003', 'driver3@demo.tms', 'REJECTED', interval '4 hours 30 minutes', interval '2 hours', interval '3 hours', 'Không đủ thời gian lấy hàng trong ngày'),
+    ('TMS-DEMO-0003', 'driver1@demo.tms', 'OFFERED', interval '20 minutes', interval '2 hours', NULL, NULL),
+    ('TMS-DEMO-0004', 'driver2@demo.tms', 'ACCEPTED', interval '5 hours', interval '2 hours', interval '4 hours 30 minutes', NULL),
+    ('TMS-DEMO-0005', 'driver1@demo.tms', 'ACCEPTED', interval '7 hours', interval '2 hours', interval '6 hours 30 minutes', NULL),
+    ('TMS-DEMO-0006', 'driver1@demo.tms', 'ACCEPTED', interval '8 hours', interval '2 hours', interval '7 hours 30 minutes', NULL),
+    ('TMS-DEMO-0007', 'driver1@demo.tms', 'ACCEPTED', interval '1 day 5 hours', interval '2 hours', interval '1 day 4 hours 30 minutes', NULL),
+    ('TMS-DEMO-0008', 'driver2@demo.tms', 'ACCEPTED', interval '1 day 6 hours', interval '2 hours', interval '1 day 5 hours 30 minutes', NULL),
+    ('TMS-DEMO-0009', 'driver3@demo.tms', 'ACCEPTED', interval '5 hours', interval '2 hours', interval '4 hours 30 minutes', NULL),
+    ('TMS-DEMO-0010', 'driver3@demo.tms', 'ACCEPTED', interval '6 hours', interval '2 hours', interval '5 hours 30 minutes', NULL),
+    ('TMS-DEMO-0011', 'driver2@demo.tms', 'ACCEPTED', interval '2 days 7 hours', interval '2 hours', interval '2 days 6 hours', NULL),
+    ('TMS-DEMO-0012', 'driver1@demo.tms', 'ACCEPTED', interval '3 days 23 hours', interval '2 hours', interval '3 days 22 hours 30 minutes', NULL)
+) AS v(code, driver_email, status, offered_ago, ttl, responded_ago, reason)
 JOIN shipments s ON s.tracking_code = v.code
 JOIN users u     ON u.email = v.driver_email
 JOIN drivers d   ON d.user_id = u.id

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trgmson.backend.dto.shipment.CreateShipmentRequest;
 import com.trgmson.backend.dto.shipment.ShipmentResponse;
 import com.trgmson.backend.dto.shipment.UpdateShipmentRequest;
-import com.trgmson.backend.exception.IllegalArgumentException;
+import com.trgmson.backend.exception.BadRequestException;
 import com.trgmson.backend.exception.ConflictException;
 import com.trgmson.backend.exception.NotFoundException;
 import com.trgmson.backend.model.Shipment;
@@ -140,13 +140,13 @@ public class ShipmentServiceImpl implements ShipmentService {
     // =========================================================================
     @Override
     @Transactional
-    public ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor, String note) {
+    public ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor) {
         Shipment shipment = findShipmentOrThrow(shipmentId);
         ShipmentStatus currentStatus = shipment.getStatus();
 
         // 1. Kiểm tra bước chuyển hợp lệ qua State Machine
         if (!currentStatus.canTransitionTo(nextStatus)) {
-            throw new IllegalArgumentException(
+            throw new BadRequestException(
                     String.format("Không thể chuyển trạng thái vận đơn từ %s sang %s", currentStatus, nextStatus));
         }
 
