@@ -325,6 +325,16 @@
   margin-top: 18px;
 }
 
+.register-phone-label {
+  margin-top: 16px;
+}
+
+.register-phone-label span {
+  color: #9aa39f;
+  font-size: 10px;
+  font-weight: 450;
+}
+
 .login-submit {
   min-height: 47px;
   margin-top: 23px;
@@ -338,6 +348,31 @@
   margin: 12px 0 0;
   color: #ba453d;
   font-size: 12px;
+}
+
+.form-success {
+  margin: 12px 0 0;
+  color: #187653;
+  font-size: 12px;
+}
+
+.auth-mode-toggle {
+  display: block;
+  margin: 17px auto 0;
+  padding: 5px 8px;
+  color: #18765f;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.auth-mode-toggle:hover {
+  color: #105941;
+  background: #f0f7f4;
 }
 
 .demo-hint {

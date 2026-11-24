@@ -21,6 +21,7 @@ public class ShipmentResponse {
     private String receiverName;
     private String receiverPhone;
     private String deliveryAddress;
+    private BigDecimal weightKg;
     private BigDecimal codAmount;
     private BigDecimal shippingFee;
     private String status;

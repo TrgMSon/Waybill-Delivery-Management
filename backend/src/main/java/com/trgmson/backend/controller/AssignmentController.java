@@ -142,9 +142,10 @@ public class AssignmentController {
     @GetMapping("/{assignmentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
     public ResponseEntity<ApiResponse<AssignmentResponse>> getAssignmentById(
-            @PathVariable Long assignmentId) {
+            @PathVariable Long assignmentId,
+            @AuthenticationPrincipal User currentUser) {
 
-        AssignmentResponse response = assignmentService.getAssignmentById(assignmentId);
+        AssignmentResponse response = assignmentService.getAssignmentById(assignmentId, currentUser);
         return ResponseEntity.ok(ApiResponse.success("Lấy chi tiết lượt gán thành công", response));
     }
 }

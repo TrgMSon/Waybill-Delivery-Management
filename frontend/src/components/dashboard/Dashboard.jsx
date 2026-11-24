@@ -4,8 +4,11 @@ import { STATUS_LABELS, STATUS_OPTIONS } from '../../constants/shipment';
 import { formatDate, formatMoney } from '../../utils/formatters';
 import Icon from '../ui/Icon';
 import MetricCard from './MetricCard';
+import DispatchBoard from '../assignments/DispatchBoard'
+import DriverAssignments from '../assignments/DriverAssignments'
 import ShipmentDetails from '../shipments/ShipmentDetails';
 import ShipmentForm from '../shipments/ShipmentForm';
+import './Dashboard.css'
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -16,6 +19,8 @@ export default function Dashboard({ user, onSignOut }) {
   const [pageData, setPageData] = useState(null);
   const [selected, setSelected] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [editing, setEditing] = useState(null)
+  const [activeView, setActiveView] = useState('shipments')
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [signingOut, setSigningOut] = useState(false);
@@ -64,18 +69,22 @@ export default function Dashboard({ user, onSignOut }) {
     }
   }
 
-  function handleCreated() {
-    setShowCreate(false);
-    setLoading(true);
-    setPage(0);
-    if (page === 0) setReloadKey((key) => key + 1);
-  }
 
   function handleUpdated(updated) {
     setSelected(updated);
     setLoading(true);
     setReloadKey((key) => key + 1);
   }
+
+  function handleShipmentSaved() {
+    setEditing(null)
+    setShowCreate(false)
+    setLoading(true)
+    setPage(0)
+    setReloadKey((key) => key + 1)
+  }
+
+  const workflowLabel = user.role === 'ADMIN' ? 'Điều phối' : 'Phân công'
 
   return (
     <div className="app-shell">
@@ -86,8 +95,8 @@ export default function Dashboard({ user, onSignOut }) {
         </a>
         <div className="sidebar-label">KHÔNG GIAN LÀM VIỆC</div>
         <nav className="side-nav" aria-label="Điều hướng chính">
-          <button className="side-nav-item" type="button" onClick={() => setMobileMenu(false)}><Icon name="grid" /><span>Tổng quan</span></button>
-          <button className="side-nav-item active" type="button" onClick={() => setMobileMenu(false)}><Icon name="box" /><span>Vận đơn</span><span className="nav-count">{totalItems}</span></button>
+          <button className={`side-nav-item ${activeView === 'shipments' ? 'active' : ''}`} type="button" onClick={() => { setActiveView('shipments'); setMobileMenu(false) }}><Icon name="box" /><span>Vận đơn</span><span className="nav-count">{totalItems}</span></button>
+          <button className={`side-nav-item ${activeView === 'workflow' ? 'active' : ''}`} type="button" onClick={() => { setActiveView('workflow'); setMobileMenu(false) }}><Icon name={user.role === 'ADMIN' ? 'grid' : 'check'} /><span>{workflowLabel}</span></button>
         </nav>
         <div className="sidebar-bottom">
           <div className="help-card"><span className="help-symbol">?</span><b>Cần hỗ trợ?</b><p>Đội ngũ Waybill luôn sẵn sàng giúp bạn.</p></div>
@@ -102,11 +111,15 @@ export default function Dashboard({ user, onSignOut }) {
       <main className="main-content">
         <header className="topbar">
           <button className="mobile-menu-button icon-button" type="button" aria-label="Mở menu" onClick={() => setMobileMenu(!mobileMenu)}><Icon name="menu" /></button>
-          <div className="breadcrumb"><span>Không gian làm việc</span><Icon name="chevron" size={14} /><b>Vận đơn</b></div>
+          <div className="breadcrumb"><span>Không gian làm việc</span><Icon name="chevron" size={14} /><b>{activeView === 'workflow' ? workflowLabel : 'Vận đơn'}</b></div>
           <div className="topbar-right"><span className="connection-dot" /> Hệ thống đang hoạt động</div>
         </header>
 
         <div className="page-content">
+          {activeView === 'workflow' ? (
+            user.role === 'ADMIN' ? <DispatchBoard /> : <DriverAssignments />
+          ) : (
+            <>
           <section className="page-heading">
             <div><span className="eyebrow eyebrow-green">QUẢN LÝ GIAO NHẬN</span><h1>Vận đơn</h1><p>Theo dõi và quản lý toàn bộ đơn hàng của bạn.</p></div>
             {user.role === 'ADMIN' && <button className="button button-primary" type="button" onClick={() => setShowCreate(true)}><Icon name="plus" size={18} /> Tạo vận đơn</button>}
@@ -160,11 +173,20 @@ export default function Dashboard({ user, onSignOut }) {
               </div>
             </div>
           </section>
+            </>
+          )}
           <footer className="page-footer"><span>© {CURRENT_YEAR} Waybill Delivery Management</span><span>Quản lý giao nhận dễ dàng hơn.</span></footer>
         </div>
       </main>
-      {showCreate && <ShipmentForm onClose={() => setShowCreate(false)} onCreated={handleCreated} />}
-      {selected && <ShipmentDetails shipment={selected} role={user.role} onClose={() => setSelected(null)} onUpdated={handleUpdated} />}
+      {showCreate && <ShipmentForm onClose={() => setShowCreate(false)} onCreated={handleShipmentSaved} />}
+      {editing && <ShipmentForm shipment={editing} onClose={() => setEditing(null)} onCreated={handleShipmentSaved} />}
+      {selected && <ShipmentDetails
+        shipment={selected}
+        role={user.role}
+        onClose={() => setSelected(null)}
+        onUpdated={handleUpdated}
+        onEdit={(shipment) => { setSelected(null); setEditing(shipment) }}
+      />}
     </div>
   )
 }

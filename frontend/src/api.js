@@ -72,6 +72,15 @@ export async function login(credentials) {
   return result.data;
 }
 
+export async function register(userDetails) {
+  return readJson(await fetch(`${API_BASE_URL}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(userDetails),
+  }))
+}
+
 export async function logout() {
   try {
     await request('/api/auth/logout', { method: 'POST' });
@@ -80,8 +89,8 @@ export async function logout() {
   }
 }
 
-export async function getShipments({ page = 0, status = '' } = {}) {
-  const params = new URLSearchParams({ page, size: 10, sort: 'createdAt,desc' });
+export async function getShipments({ page = 0, size = 10, status = '' } = {}) {
+  const params = new URLSearchParams({ page, size, sort: 'createdAt,desc' })
   if (status) params.set('status', status);
   return request(`/api/shipments?${params}`);
 }
@@ -93,9 +102,61 @@ export async function createShipment(shipment) {
   });
 }
 
+export async function updateShipment(id, shipment) {
+  return request(`/api/shipments/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(shipment),
+  })
+}
+
 export async function transitionShipment(id, nextStatus, note) {
   return request(`/api/shipments/${id}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ nextStatus, note }),
   });
+}
+
+export async function getDrivers() {
+  return request('/api/drivers')
+}
+
+export async function getShipmentById(id) {
+  return request(`/api/shipments/${id}`)
+}
+
+export async function assignDriver(shipmentId, driverId, reassign = false) {
+  const result = await request(`/api/assignments/${reassign ? 'reassign' : 'assign'}`, {
+    method: 'POST',
+    body: JSON.stringify({ shipmentId, driverId }),
+  })
+  return result.data
+}
+
+export async function revokeAssignment(shipmentId, reason) {
+  return request(`/api/assignments/shipments/${shipmentId}/revoke`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  })
+}
+
+export async function getAssignmentHistory(shipmentId) {
+  const result = await request(`/api/assignments/shipments/${shipmentId}`)
+  return result.data
+}
+
+export async function getMyAssignments({ page = 0, status = '' } = {}) {
+  const params = new URLSearchParams({ page, size: 10, sort: 'offeredAt,desc' })
+  if (status) params.set('status', status)
+  const result = await request(`/api/assignments/my?${params}`)
+  return result.data
+}
+
+export async function respondToAssignment(id, action, shipmentId, reason = '') {
+  const result = await request(`/api/assignments/${id}/${action}`, {
+    method: 'POST',
+    ...(action === 'reject' && {
+      body: JSON.stringify({ shipmentId, reason }),
+    }),
+  })
+  return result.data
 }
