@@ -62,3 +62,5 @@ replay_pid*
 .njsproj
 .sln
 .swp
+
+.github/modernize/assessment/engines/facts/*
