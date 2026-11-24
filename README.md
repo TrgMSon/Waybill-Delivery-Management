@@ -22,6 +22,18 @@
 - REST API cho phép quản trị viên cập nhật thông tin vận đơn chỉ khi vận đơn đang ở trạng thái `CREATED`.
 - Hệ thống ghi lại lịch sử mỗi lần thay đổi trạng thái cùng người thực hiện thay đổi.
 
+### Gán vận đơn cho tài xế
+
+- Quản trị viên có thể gán một vận đơn chưa được phân công cho tài xế, đổi sang tài xế khác hoặc thu hồi lượt phân công hiện tại.
+- Khi gán hoặc đổi tài xế, hệ thống lưu lượt phân công với trạng thái `OFFERED`, `ACCEPTED`, `REJECTED`, `EXPIRED` hoặc `CANCELLED`.
+- Tài xế có thể chấp nhận hoặc từ chối lượt phân công được gửi cho tài khoản của mình. Khi từ chối, tài xế phải cung cấp lý do.
+- Sau khi tài xế chấp nhận, lượt phân công chuyển sang trạng thái `ACCEPTED`. Tài xế không thể chấp nhận một lượt phân công đã hết hạn hoặc không thuộc tài khoản của mình.
+- Sau khi tài xế từ chối, lượt phân công chuyển sang trạng thái `REJECTED` và vận đơn được đưa về trạng thái `CREATED` để có thể phân công lại.
+- Quản trị viên có thể thu hồi lượt phân công đang ở trạng thái `OFFERED` hoặc `ACCEPTED`, kèm lý do tùy chọn. Hệ thống không cho thu hồi khi vận đơn đã chuyển sang `PICKED_UP`.
+- Khi thu hồi hoặc tài xế từ chối, vận đơn được đưa về trạng thái `CREATED`.
+- Lượt phân công ở trạng thái chờ nhận (`OFFERED`) mà quá thời gian phản hồi sẽ được hệ thống quét định kỳ mỗi phút, chuyển sang `EXPIRED` và đưa vận đơn về `CREATED`.
+- Hệ thống lưu lý do thu hồi/từ chối và ghi thời điểm phản hồi khi tài xế từ chối, quản trị viên thu hồi hoặc lượt phân công hết hạn.
+
 ### Luồng trạng thái vận đơn
 
 Hệ thống kiểm tra chuyển trạng thái bằng state machine:
@@ -71,7 +83,7 @@ Tài khoản demo (được tạo bởi seed database):
 | Quản trị viên | `admin@demo.tms` | `Demo@123` |
 | Tài xế | `driver1@demo.tms` | `Demo@123` |
 
-Tài khoản tài xế chỉ xem các vận đơn được phân công; tài khoản quản trị có thể tạo vận đơn và chuyển trạng thái.
+Tài khoản tài xế chỉ xem và phản hồi các vận đơn được phân công; tài khoản quản trị có thể tạo vận đơn, gán hoặc thu hồi phân công và chuyển trạng thái vận đơn.
 
 ## Xác thực và cấu hình triển khai
 

@@ -16,9 +16,9 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
 
     Optional<Shipment> findByTrackingCode(String trackingCode);
 
-    Page<Shipment> findByAssignedDriverId(Long id, Pageable pageable);
+    Page<Shipment> findByCurrentDriverId(Long id, Pageable pageable);
 
-    Page<Shipment> findByAssignedDriverIdAndStatus(Long id, ShipmentStatus status, Pageable pageable);
+    Page<Shipment> findByCurrentDriverIdAndStatus(Long id, ShipmentStatus status, Pageable pageable);
 
     boolean existsById(Long id);
 }
