@@ -28,6 +28,43 @@ replay_pid*
 
 .env
 
+# Flutter mobile app (Android and iOS)
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.pub-cache/
+mobile/.pub/
+mobile/build/
+mobile/coverage/
+mobile/.widget_preview/
+mobile/*.iml
+mobile/.idea/
+
+# Android build artifacts and local configuration
+mobile/android/.gradle/
+mobile/android/.cxx/
+mobile/android/captures/
+mobile/android/local.properties
+mobile/android/**/build/
+mobile/android/**/*.keystore
+mobile/android/**/*.jks
+
+# iOS build artifacts and local configuration
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/**/DerivedData/
+mobile/ios/**/xcuserdata/
+mobile/ios/**/*.xcworkspace/xcuserdata/
+
+# This project only targets Android and iOS
+mobile/linux/
+mobile/macos/
+mobile/web/
+mobile/windows/
+
 # =========================
 # React / Node.js Git Ignore
 # =========================
