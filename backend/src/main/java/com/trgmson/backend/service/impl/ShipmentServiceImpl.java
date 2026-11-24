@@ -24,6 +24,7 @@ import com.trgmson.backend.model.enums.ShipmentStatus;
 import com.trgmson.backend.repository.ShipmentRepository;
 import com.trgmson.backend.repository.ShipmentStatusHistoryRepository;
 import com.trgmson.backend.repository.AssignmentRepository;
+import com.trgmson.backend.repository.DriverRepository;
 import com.trgmson.backend.service.ShipmentService;
 
 @Service
@@ -36,13 +37,16 @@ public class ShipmentServiceImpl implements ShipmentService {
     private final ShipmentRepository shipmentRepository;
     private final ShipmentStatusHistoryRepository historyRepository;
     private final AssignmentRepository assignmentRepository;
+    private final DriverRepository driverRepository;
 
     public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
                                ShipmentStatusHistoryRepository historyRepository,
-                               AssignmentRepository assignmentRepository) {
+                               AssignmentRepository assignmentRepository,
+                               DriverRepository driverRepository) {
         this.shipmentRepository = shipmentRepository;
         this.historyRepository = historyRepository;
         this.assignmentRepository = assignmentRepository;
+        this.driverRepository = driverRepository;
     }
 
     // =========================================================================
@@ -61,6 +65,7 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .receiverName(req.getReceiverName())
                 .receiverPhone(req.getReceiverPhone())
                 .deliveryAddress(req.getDeliveryAddress())
+                .weightKg(req.getWeightKg())
                 .codAmount(req.getCodAmount())
                 .shippingFee(req.getShippingFee())
                 .status(ShipmentStatus.CREATED)
@@ -81,7 +86,8 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional(readOnly = true)
     public ShipmentResponse getById(Long id, User currentUser) {
-        if (!assignmentRepository.existsByShipmentId(id) && !currentUser.getRole().equals(Role.ADMIN)) {
+        if (!currentUser.getRole().equals(Role.ADMIN)
+                && !assignmentRepository.existsByShipmentIdAndDriverUserId(id, currentUser.getId())) {
             throw new ConflictException("Người dùng không có quyền truy cập vận đơn này");
         }
 
@@ -100,9 +106,12 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
         // Nếu là DRIVER, chỉ lấy các vận đơn được phân công cho họ
         if (currentUser.getRole().equals(Role.DRIVER)) {
+            Long driverId = driverRepository.findByUserId(currentUser.getId())
+                    .orElseThrow(() -> new NotFoundException("Không tìm thấy hồ sơ tài xế."))
+                    .getId();
             Page<Shipment> page = (status == null)
-                    ? shipmentRepository.findByCurrentDriverId(currentUser.getId(), pageable)
-                    : shipmentRepository.findByCurrentDriverIdAndStatus(currentUser.getId(), status, pageable);
+                    ? shipmentRepository.findByCurrentDriverId(driverId, pageable)
+                    : shipmentRepository.findByCurrentDriverIdAndStatus(driverId, status, pageable);
             return page.map(this::mapToResponse);
         }
 
@@ -129,6 +138,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipment.setReceiverName(req.getReceiverName());
         shipment.setReceiverPhone(req.getReceiverPhone());
         shipment.setDeliveryAddress(req.getDeliveryAddress());
+        shipment.setWeightKg(req.getWeightKg());
         shipment.setCodAmount(req.getCodAmount());
         shipment.setShippingFee(req.getShippingFee());
 
@@ -205,6 +215,7 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .receiverName(s.getReceiverName())
                 .receiverPhone(s.getReceiverPhone())
                 .deliveryAddress(s.getDeliveryAddress())
+                .weightKg(s.getWeightKg())
                 .codAmount(s.getCodAmount())
                 .shippingFee(s.getShippingFee())
                 .status(s.getStatus().name())

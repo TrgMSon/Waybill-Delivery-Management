@@ -14,12 +14,12 @@
 
 ### Quản lý vận đơn
 
-- Quản trị viên tạo vận đơn với mã vận đơn duy nhất, thông tin người gửi, địa chỉ lấy hàng, thông tin người nhận, địa chỉ giao hàng, tiền thu hộ (COD) và phí vận chuyển.
+- Quản trị viên tạo vận đơn với mã vận đơn duy nhất, thông tin người gửi, địa chỉ lấy hàng, thông tin người nhận, địa chỉ giao hàng, khối lượng, tiền thu hộ (COD) và phí vận chuyển.
 - Mã vận đơn được sinh tự động theo mẫu có tiền tố `TMS`, ngày hiện tại và chuỗi ngẫu nhiên.
 - Danh sách vận đơn hỗ trợ phân trang, sắp xếp theo thời gian tạo giảm dần và lọc theo trạng thái.
 - Giao diện cho phép tìm kiếm trong trang hiện tại theo mã vận đơn, tên người nhận, số điện thoại người nhận hoặc địa chỉ giao hàng.
 - Quản trị viên xem được toàn bộ vận đơn; tài xế chỉ xem chi tiết và danh sách vận đơn được phân công cho tài khoản của mình.
-- REST API cho phép quản trị viên cập nhật thông tin vận đơn chỉ khi vận đơn đang ở trạng thái `CREATED`.
+- Giao diện quản trị viên hỗ trợ tạo và chỉnh sửa vận đơn; backend chỉ cho sửa khi vận đơn đang ở trạng thái `CREATED`.
 - Hệ thống ghi lại lịch sử mỗi lần thay đổi trạng thái cùng người thực hiện thay đổi.
 
 ### Gán vận đơn cho tài xế
@@ -33,6 +33,8 @@
 - Khi thu hồi hoặc tài xế từ chối, vận đơn được đưa về trạng thái `CREATED`.
 - Lượt phân công ở trạng thái chờ nhận (`OFFERED`) mà quá thời gian phản hồi sẽ được hệ thống quét định kỳ mỗi phút, chuyển sang `EXPIRED` và đưa vận đơn về `CREATED`.
 - Hệ thống lưu lý do thu hồi/từ chối và ghi thời điểm phản hồi khi tài xế từ chối, quản trị viên thu hồi hoặc lượt phân công hết hạn.
+- Giao diện điều phối hiển thị danh sách tài xế khả dụng, phân công/đổi tài xế, thu hồi lượt phân công và xem lịch sử.
+- Tài xế có màn hình riêng để lọc lời mời, xem thông tin giao hàng, chấp nhận hoặc từ chối kèm lý do.
 
 ### Luồng trạng thái vận đơn
 
@@ -84,6 +86,8 @@ Tài khoản demo (được tạo bởi seed database):
 | Tài xế | `driver1@demo.tms` | `Demo@123` |
 
 Tài khoản tài xế chỉ xem và phản hồi các vận đơn được phân công; tài khoản quản trị có thể tạo vận đơn, gán hoặc thu hồi phân công và chuyển trạng thái vận đơn.
+
+Frontend hiện kết nối các REST API xác thực, vận đơn, tài xế và phân công. Các bảng `proof_of_delivery` và `cod_settlements` hiện chỉ có schema/dữ liệu mẫu, chưa có REST API để giao diện gửi/nhận nghiệp vụ tương ứng.
 
 ## Xác thực và cấu hình triển khai
 

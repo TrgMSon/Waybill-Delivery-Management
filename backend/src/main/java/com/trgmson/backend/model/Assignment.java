@@ -40,8 +40,8 @@ public class Assignment {
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "driver_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
     @Enumerated(EnumType.STRING)

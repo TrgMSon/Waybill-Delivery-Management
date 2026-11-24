@@ -13,9 +13,11 @@ import com.trgmson.backend.dto.user.UserResponse;
 import com.trgmson.backend.exception.ConflictException;
 import com.trgmson.backend.exception.UnauthorizedException;
 import com.trgmson.backend.model.RefreshToken;
+import com.trgmson.backend.model.Driver;
 import com.trgmson.backend.model.User;
 import com.trgmson.backend.model.enums.Role;
 import com.trgmson.backend.model.enums.UserStatus;
+import com.trgmson.backend.repository.DriverRepository;
 import com.trgmson.backend.repository.UserRepository;
 import com.trgmson.backend.security.JwtService;
 import com.trgmson.backend.service.AuthService;
@@ -29,16 +31,19 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService refreshTokenService;
+    private final DriverRepository driverRepository;
 
     public AuthServiceImpl(UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder,
-            RefreshTokenService refreshTokenService) {
+            RefreshTokenService refreshTokenService, DriverRepository driverRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenService = refreshTokenService;
+        this.driverRepository = driverRepository;
     }
 
     @Override
+    @Transactional
     public void register(RegisterRequest req) {
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new ConflictException(
@@ -49,13 +54,18 @@ public class AuthServiceImpl implements AuthService {
 
         User user = User.builder()
                 .email(req.getEmail())
+                .fullName(req.getFullName())
+                .phone(req.getPhone())
                 .role(Role.DRIVER)
                 .status(UserStatus.ACTIVE)
                 .passwordHash(passwordHash)
                 .createdAt(Instant.now())
                 .build();
 
-        userRepository.save(Objects.requireNonNull(user, "Không tìm thấy người dùng"));
+        User savedUser = userRepository.save(Objects.requireNonNull(user, "Không tìm thấy người dùng"));
+        driverRepository.save(Driver.builder()
+                .user(savedUser)
+                .build());
     }
 
     @Override

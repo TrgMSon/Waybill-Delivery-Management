@@ -5,7 +5,7 @@ import { formatDate, formatMoney } from '../../utils/formatters';
 import Icon from '../ui/Icon';
 import Modal from '../ui/Modal';
 
-export default function ShipmentDetails({ shipment, role, onClose, onUpdated }) {
+export default function ShipmentDetails({ shipment, role, onClose, onUpdated, onEdit }) {
   const [nextStatus, setNextStatus] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
@@ -40,10 +40,16 @@ export default function ShipmentDetails({ shipment, role, onClose, onUpdated }) 
           <DetailAddress label="ĐIỂM GIAO HÀNG" name={shipment.receiverName} phone={shipment.receiverPhone} address={shipment.deliveryAddress} />
         </div>
         <div className="detail-payment">
+          <div><span>Khối lượng</span><b>{shipment.weightKg} kg</b></div>
           <div><span>Tiền thu hộ (COD)</span><b>{formatMoney(shipment.codAmount)}</b></div>
           <div><span>Phí vận chuyển</span><b>{formatMoney(shipment.shippingFee)}</b></div>
           {shipment.note && <div className="detail-note"><span>Ghi chú</span><b>{shipment.note}</b></div>}
         </div>
+        {role === 'ADMIN' && shipment.status === 'CREATED' && onEdit && (
+          <div className="shipment-edit-action">
+            <button className="button button-quiet" type="button" onClick={() => onEdit(shipment)}>Chỉnh sửa thông tin</button>
+          </div>
+        )}
         {role === 'ADMIN' && options.length > 0 && (
           <form className="status-update" onSubmit={handleStatusChange}>
             <div className="form-section-title">Cập nhật trạng thái</div>

@@ -25,6 +25,6 @@ public interface AssignmentService {
     // get data
     List<AssignmentResponse> getAssignmentsByShipment(Long shipmentId);
     Page<AssignmentResponse> getDriverAssignments(Long id, AssignmentStatus status, Pageable pageable);
-    AssignmentResponse getAssignmentById(Long assignmentId);
+    AssignmentResponse getAssignmentById(Long assignmentId, User user);
 
 }

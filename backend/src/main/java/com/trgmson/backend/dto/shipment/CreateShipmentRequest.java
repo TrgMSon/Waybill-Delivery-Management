@@ -42,6 +42,10 @@ public class CreateShipmentRequest {
     @Size(max = 255, message = "Địa chỉ giao hàng tối đa 255 ký tự")
     private String deliveryAddress;
 
+    @NotNull(message = "Khối lượng không được để trống")
+    @DecimalMin(value = "0.01", message = "Khối lượng phải lớn hơn 0")
+    private BigDecimal weightKg;
+
     @NotNull(message = "Tiền thu hộ (COD) không được để trống")
     @DecimalMin(value = "0.0", inclusive = true, message = "Tiền COD phải lớn hơn hoặc bằng 0")
     private BigDecimal codAmount;
