@@ -70,7 +70,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment saved = shipmentRepository.save(shipment);
 
         // Ghi mốc lịch sử khởi tạo đầu tiên
-        saveHistory(saved, null, ShipmentStatus.CREATED, creator);
+        saveHistory(saved, null, ShipmentStatus.CREATED, creator, "");
 
         return mapToResponse(saved);
     }
@@ -81,7 +81,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     @Transactional(readOnly = true)
     public ShipmentResponse getById(Long id, User currentUser) {
-        if (!assignmentRepository.existsByShipmentIdAndUserId(id, currentUser.getId()) && !currentUser.getRole().equals(Role.ADMIN)) {
+        if (!assignmentRepository.existsByShipmentId(id) && !currentUser.getRole().equals(Role.ADMIN)) {
             throw new ConflictException("Người dùng không có quyền truy cập vận đơn này");
         }
 
@@ -101,8 +101,8 @@ public class ShipmentServiceImpl implements ShipmentService {
         // Nếu là DRIVER, chỉ lấy các vận đơn được phân công cho họ
         if (currentUser.getRole().equals(Role.DRIVER)) {
             Page<Shipment> page = (status == null)
-                    ? shipmentRepository.findByAssignedDriverId(currentUser.getId(), pageable)
-                    : shipmentRepository.findByAssignedDriverIdAndStatus(currentUser.getId(), status, pageable);
+                    ? shipmentRepository.findByCurrentDriverId(currentUser.getId(), pageable)
+                    : shipmentRepository.findByCurrentDriverIdAndStatus(currentUser.getId(), status, pageable);
             return page.map(this::mapToResponse);
         }
 
@@ -140,7 +140,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     // =========================================================================
     @Override
     @Transactional
-    public ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor) {
+    public ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor, String note) {
         Shipment shipment = findShipmentOrThrow(shipmentId);
         ShipmentStatus currentStatus = shipment.getStatus();
 
@@ -156,7 +156,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         Shipment updated = shipmentRepository.save(shipment);
 
         // 3. Ghi lịch sử biến động trạng thái
-        saveHistory(updated, currentStatus, nextStatus, actor);
+        saveHistory(updated, currentStatus, nextStatus, actor, note);
 
         return mapToResponse(updated);
     }
@@ -169,11 +169,12 @@ public class ShipmentServiceImpl implements ShipmentService {
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy vận đơn với ID: " + id));
     }
 
-    private void saveHistory(Shipment shipment, ShipmentStatus fromStatus, ShipmentStatus toStatus, User actor) {
+    private void saveHistory(Shipment shipment, ShipmentStatus fromStatus, ShipmentStatus toStatus, User actor, String note) {
         ShipmentStatusHistory history = ShipmentStatusHistory.builder()
                 .shipment(shipment)
                 .fromStatus(fromStatus)
                 .toStatus(toStatus)
+                .reason(note)
                 .changedBy(actor)
                 .build();
         historyRepository.save(history);

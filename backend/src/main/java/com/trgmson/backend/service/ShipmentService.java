@@ -21,5 +21,5 @@ public interface ShipmentService {
     ShipmentResponse updateShipment(Long id, UpdateShipmentRequest req);
 
     // 4. Phương thức trung tâm duy nhất cho mọi lần đổi trạng thái
-    ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor);
+    ShipmentResponse transitionStatus(Long shipmentId, ShipmentStatus nextStatus, User actor, String note);
 }

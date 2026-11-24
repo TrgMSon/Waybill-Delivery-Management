@@ -31,14 +31,13 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/shipments")
 public class ShipmentController {
-
     private final ShipmentService shipmentService;
 
     public ShipmentController(ShipmentService shipmentService) {
         this.shipmentService = shipmentService;
     }
 
-    // 1. Tạo vận đơn mới (Khách hàng / Nhân viên điều phối / Admin)
+    // 1. Tạo vận đơn mới (Admin)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ShipmentResponse> createShipment(
@@ -85,7 +84,8 @@ public class ShipmentController {
         ShipmentResponse response = shipmentService.transitionStatus(
                 id,
                 request.getNextStatus(),
-                currentUser);
+                currentUser,
+                request.getNote());
         return ResponseEntity.ok(response);
     }
 }
