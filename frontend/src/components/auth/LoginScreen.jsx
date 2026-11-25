@@ -40,7 +40,7 @@ export default function LoginScreen({ onLogin }) {
       <section className="login-story">
         <a className="brand brand-light" href="/" aria-label="Waybill home">
           <span className="brand-mark"><Icon name="box" size={23} /></span>
-          <span>waybill<span className="brand-dot">.</span></span>
+          <span>Waybill Delivery Management<span className="brand-dot">.</span></span>
         </a>
         <div className="story-copy">
           <span className="eyebrow">NỀN TẢNG ĐIỀU PHỐI GIAO HÀNG</span>
