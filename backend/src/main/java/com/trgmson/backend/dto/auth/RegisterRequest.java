@@ -3,9 +3,15 @@ package com.trgmson.backend.dto.auth;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class RegisterRequest {
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Không đúng định dạng email")
@@ -22,53 +28,8 @@ public class RegisterRequest {
     @Size(max = 20, message = "Số điện thoại tối đa 20 ký tự")
     private String phone;
 
-    public RegisterRequest() {
-    }
-
     public RegisterRequest(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public RegisterRequest(String email, String password, String fullName, String phone) {
-        this.email = email;
-        this.password = password;
-        this.fullName = fullName;
-        this.phone = phone;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private String email;
-        private String password;
-        private String fullName;
-        private String phone;
-
-        public Builder email(String email) {
-            this.email = email;
-            return this;
-        }
-
-        public Builder password(String password) {
-            this.password = password;
-            return this;
-        }
-
-        public Builder fullName(String fullName) {
-            this.fullName = fullName;
-            return this;
-        }
-
-        public Builder phone(String phone) {
-            this.phone = phone;
-            return this;
-        }
-
-        public RegisterRequest build() {
-            return new RegisterRequest(email, password, fullName, phone);
-        }
     }
 }

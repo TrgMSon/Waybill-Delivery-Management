@@ -13,12 +13,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "refresh_tokens")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class RefreshToken {
     @Id
@@ -44,18 +48,4 @@ public class RefreshToken {
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
-
-    public RefreshToken() {
-    }
-
-    public RefreshToken(Long id, String tokenHash, User user, Instant expiresAt, boolean revoked,
-                        Instant revokedAt, Instant createdAt) {
-        this.id = id;
-        this.tokenHash = tokenHash;
-        this.user = user;
-        this.expiresAt = expiresAt;
-        this.revoked = revoked;
-        this.revokedAt = revokedAt;
-        this.createdAt = createdAt;
-    }
 }
