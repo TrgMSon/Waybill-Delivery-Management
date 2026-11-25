@@ -84,6 +84,11 @@ export default function Dashboard({ user, onSignOut }) {
     setReloadKey((key) => key + 1)
   }
 
+  function handleWorkflowChanged() {
+    setLoading(true);
+    setReloadKey((key) => key + 1);
+  }
+
   const workflowLabel = user.role === 'ADMIN' ? 'Điều phối' : 'Phân công'
 
   return (
@@ -91,7 +96,7 @@ export default function Dashboard({ user, onSignOut }) {
       <aside className={`sidebar ${mobileMenu ? 'sidebar-open' : ''}`}>
         <a className="brand brand-sidebar" href="/" aria-label="Waybill">
           <span className="brand-mark"><Icon name="box" size={22} /></span>
-          <span>waybill<span className="brand-dot">.</span></span>
+          <span>Waybill Delivery Management</span>
         </a>
         <div className="sidebar-label">KHÔNG GIAN LÀM VIỆC</div>
         <nav className="side-nav" aria-label="Điều hướng chính">
@@ -117,7 +122,7 @@ export default function Dashboard({ user, onSignOut }) {
 
         <div className="page-content">
           {activeView === 'workflow' ? (
-            user.role === 'ADMIN' ? <DispatchBoard /> : <DriverAssignments />
+            user.role === 'ADMIN' ? <DispatchBoard onChanged={handleWorkflowChanged} /> : <DriverAssignments onChanged={handleWorkflowChanged} />
           ) : (
             <>
           <section className="page-heading">
@@ -175,7 +180,7 @@ export default function Dashboard({ user, onSignOut }) {
           </section>
             </>
           )}
-          <footer className="page-footer"><span>© {CURRENT_YEAR} Waybill Delivery Management</span><span>Quản lý giao nhận dễ dàng hơn.</span></footer>
+          <footer className="page-footer"><span>© {CURRENT_YEAR} Waybill Delivery Management</span></footer>
         </div>
       </main>
       {showCreate && <ShipmentForm onClose={() => setShowCreate(false)} onCreated={handleShipmentSaved} />}

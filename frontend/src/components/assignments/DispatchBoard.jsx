@@ -11,7 +11,7 @@ import Icon from '../ui/Icon'
 
 const ACTIVE_ASSIGNMENTS = ['OFFERED', 'ACCEPTED']
 
-export default function DispatchBoard() {
+export default function DispatchBoard({ onChanged }) {
   const [shipments, setShipments] = useState([])
   const [drivers, setDrivers] = useState([])
   const [histories, setHistories] = useState({})
@@ -62,8 +62,10 @@ export default function DispatchBoard() {
     try {
       await assignDriver(shipment.id, driverId, Boolean(currentAssignment))
       setReloadKey((key) => key + 1)
+      onChanged?.()
     } catch (assignError) {
       setError(assignError.message)
+      setLoading(false)
     } finally {
       setBusyId(null)
     }
@@ -76,8 +78,10 @@ export default function DispatchBoard() {
     try {
       await revokeAssignment(shipment.id, revokeReasons[shipment.id] || '')
       setReloadKey((key) => key + 1)
+      onChanged?.()
     } catch (revokeError) {
       setError(revokeError.message)
+      setLoading(false)
     } finally {
       setBusyId(null)
     }

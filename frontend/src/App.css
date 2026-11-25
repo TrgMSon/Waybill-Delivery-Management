@@ -81,10 +81,6 @@
   border-radius: 11px;
 }
 
-.brand-dot {
-  color: #25a27e;
-}
-
 .login-page {
   display: grid;
   min-height: 100vh;
@@ -492,7 +488,7 @@
 }
 
 .brand-sidebar .brand-mark {
-  width: 34px;
+  width: 50px;
   height: 34px;
   border-radius: 10px;
 }
@@ -1089,7 +1085,7 @@
 
 .page-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: 17px;
   color: #a0a9a4;
   font-size: 9px;
